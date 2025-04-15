@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Cookie Clicker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #080808;
+            font-family: 'Press Start 2P', cursive;
+            color: #eee;
+            animation: fadeInBackground 2s ease forwards;
+            opacity: 0;
+        }
+        @keyframes fadeInBackground {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        #cookie {
+            width: 200px;
+            height: 200px;
+            background-image: url('cookie.png');
+            background-size: cover;
+            cursor: pointer;
+            border: none;
+            border-radius: 50%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+          100% { transform: scale(1); }
+        }
+
+        #cookie:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7);
+        }
+
+        #cookie:active {
+            transform: scale(0.9);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #counter {
+            font-size: 2em;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            animation: fadeInText 1s ease forwards, shimmer 2s infinite alternate;
+            opacity: 0;
+        }
+        @keyframes fadeInText {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes shimmer {
+            from { color: #ffd700; }
+            to { color: #ffef00; }
+        }
+
+        #cps {
+            font-size: 1.2em;
+            color: #aaa;
+            margin-bottom: 20px;
+            animation: fadeInText 1s ease forwards 0.5s;
+            opacity: 0;
+        }
+
+        #store {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 800px;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease forwards 1s;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .store-item {
+            background-color: #222;
+            border: 2px solid #555;
+            border-radius: 10px;
+            padding: 15px;
+            width: 250px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .store-item:hover {
+            background-color: #333;
+            transform: scale(1.05);
+            border-color: #777;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .store-item:active {
+            transform: scale(0.95);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .store-item h3 {
+            font-size: 1.2em;
+            color: #eee;
+            margin-bottom: 5px;
+        }
+
+        .store-item p {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        .store-item button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .store-item button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        .store-item button:active {
+            background-color: #388e3c;
+            transform: scale(0.95);
+        }
+
+        #message-box {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1em;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease, bottom 0.3s ease;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .show-message {
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        .hidden-message {
+            opacity: 0;
+            bottom: 20px;
+        }
+
+        @media screen and (max-width: 600px) {
+            #cookie {
+                width: 150px;
+                height: 150px;
+            }
+            #counter {
+                font-size: 2em;
+            }
+            #cps {
+                font-size: 1em;
+            }
+            .store-item {
+                width: 90%;
+                margin-left: 5%;
+                margin-right: 5%;
+            }
+            .store-item h3{
+              font-size: 1em;
+            }
+            .store-item p{
+              font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button id="cookie"></button>
+    <div id="counter">Cookies: 0</div>
+    <div id="cps">Cookies per Second: 0</div>
+    <div id="store"></div>
+    <div id="message-box" class="hidden-message"></div>
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfJYPqQ8ijhRP7H0md_DWGwnrpMACII0YHnw&s">
+    <script>
+        const cookieButton = document.getElementById('cookie');
+        const counterDisplay = document.getElementById('counter');
+        const cpsDisplay = document.getElementById('cps');
+        const storeContainer = document.getElementById('store');
+        const messageBox = document.getElementById('message-box');
+
+        let cookies = 0;
+        let cps = 0;
+        let storeItems = [
+            {
+                name: 'Cursor',
+                cost: 15,
+                productionRate: 0.1,
+                count: 0,
+                description: 'Automatically clicks the cookie for you.',
+            },
+            {
+                name: 'Grandma',
+                cost: 100,
+                productionRate: 1,
+                count: 0,
+                description: 'A friendly grandma that bakes cookies.',
+            },
+            {
+                name: 'Farm',
+                cost: 1100,
+                productionRate: 8,
+                count: 0,
+                description: 'Grows cookie plants.',
+            },
+            {
+                name: 'Mine',
+                cost: 12000,
+                productionRate: 47,
+                count: 0,
+                description: 'Mines cookie ore.',
+            },
+            {
+                name: 'Factory',
+                cost: 130000,
+                productionRate: 260,
+                count: 0,
+                description: 'Produces massive amounts of cookies.',
+            },
+            {
+                name: 'Bank',
+                cost: 1400000,
+                productionRate: 1400,
+                count: 0,
+                description: 'Generates cookies from interest.',
+            },
+            {
+                name: 'Temple',
+                cost: 20000000,
+                productionRate: 7800,
+                count: 0,
+                description: 'A place of cookie worship.',
+            },
+            {
+                name: 'Wizard Tower',
+                cost: 330000000,
+                productionRate: 44000,
+                count: 0,
+                description: 'Summons cookies with magic.',
+            },
+            {
+                name: 'Shipment',
+                cost: 5100000000,
+                productionRate: 260000,
+                count: 0,
+                description: 'Delivers cookies from another planet.',
+            },
+            {
+                name: 'Alchemy Lab',
+                cost: 75000000000,
+                productionRate: 1600000,
+                count: 0,
+                description: 'Transmutes gold into cookies.',
+            },
+            {
+                name: 'Portal',
+                cost: 1000000000000,
+                productionRate: 10000000,
+                count: 0,
+                description: 'Opens a gateway to the cookieverse.',
+            },
+            {
+                name: 'Time Machine',
+                cost: 14000000000000,
+                productionRate: 65000000,
+                count: 0,
+                description: 'Brings cookies from the past, present, and future.',
+            },
+            {
+                name: 'Antimatter Condenser',
+                cost: 170000000000000,
+                productionRate: 390000000,
+                count: 0,
+                description: 'Condenses antimatter into pure cookies.',
+            },
+            {
+                name: 'Prism',
+                cost: 2100000000000000,
+                productionRate: 2300000000,
+                count: 0,
+                description: 'Converts light into cookies.',
+            },
+            {
+                name: 'Chance Maker',
+                cost: 26000000000000000,
+                productionRate: 14000000000,
+                count: 0,
+                description: 'Generates cookies from pure chance.',
+            },
+        ];
+
+        function updateCounter() {
+            counterDisplay.textContent = `Cookies: ${cookies.toFixed(0)}`;
+        }
+
+        function updateCps() {
+            cpsDisplay.textContent = `Cookies per Second: ${cps.toFixed(1)}`;
+        }
+
+        function handleClick() {
+            cookies++;
+            updateCounter();
+        }
+
+        function createStoreItem(item) {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('store-item');
+
+            const title = document.createElement('h3');
+            title.textContent = item.name;
+
+            const description = document.createElement('p');
+            description.textContent = item.description;
+
+            const cost = document.createElement('p');
+            cost.textContent = `Cost: ${item.cost.toFixed(0)}`;
+
+            const buyButton = document.createElement('button');
+            buyButton.textContent = `Buy (${item.count})`;
+            buyButton.addEventListener('click', () => {
+                if (cookies >= item.cost) {
+                    cookies -= item.cost;
+                    item.count++;
+                    cps += item.productionRate;
+                    updateCounter();
+                    updateCps();
+                    item.cost *= 1.15;
+                    cost.textContent = `Cost: ${item.cost.toFixed(0)}`;
+                    buyButton.textContent = `Buy (${item.count})`;
+                    showMessage(`You bought a ${item.name}!`);
+                } else {
+                    showMessage(`Not enough cookies!`);
+                }
+            });
+
+            itemDiv.appendChild(title);
+            itemDiv.appendChild(description);
+            itemDiv.appendChild(cost);
+            itemDiv.appendChild(buyButton);
+            storeContainer.appendChild(itemDiv);
+        }
+
+        function showMessage(message) {
+            messageBox.textContent = message;
+            messageBox.classList.remove('hidden-message');
+            messageBox.classList.add('show-message');
+
+            setTimeout(() => {
+                messageBox.classList.remove('show-message');
+                messageBox.classList.add('hidden-message');
+            }, 3000);
+        }
+
+        cookieButton.addEventListener('click', handleClick);
+
+        storeItems.forEach(item => createStoreItem(item));
+
+        setInterval(() => {
+            cookies += cps / 10;
+            updateCounter();
+        }, 100);
+    </script>
+</body>
+</html>
